@@ -2,134 +2,107 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Rocket Payment | Sotota Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>রকেট পেমেন্ট গেটওয়ে | Sotota Shop</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .rocket-gradient { background: linear-gradient(135deg, #8c3494 0%, #5a1a61 100%); }
         
         .toast-custom {
-            visibility: hidden; min-width: 280px; background: #1e293b; color: white;
-            text-align: center; border-radius: 2rem; padding: 12px 20px; position: fixed;
-            z-index: 1000; bottom: 30px; left: 50%; transform: translateX(-50%) scale(0.9);
-            opacity: 0; transition: all 0.25s ease; font-weight: 600; backdrop-filter: blur(8px);
-            background: rgba(30,41,59,0.95); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.2);
+            visibility: hidden; min-width: 250px; background: #1F2937; color: white;
+            text-align: center; border-radius: 50px; padding: 12px; position: fixed;
+            z-index: 1000; bottom: 30px; left: 50%; transform: translateX(-50%);
+            opacity: 0; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-        .toast-custom.show { visibility: visible; opacity: 1; transform: translateX(-50%) scale(1); }
+        .toast-custom.show { visibility: visible; opacity: 1; }
         
         .loading-spinner {
-            display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 50%; border-top-color: white; animation: spin 0.6s linear infinite; margin-right: 8px;
+            width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%; border-top-color: white; animation: spin 0.6s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .skeleton-shimmer {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
-            background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 12px;
-        }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        
+
         .banner-container::-webkit-scrollbar { display: none; }
-        .banner-container { -ms-overflow-style: none; scrollbar-width: none; }
         .banner-img { 
-            width: 150px; height: 90px; object-fit: cover; border-radius: 15px; 
-            flex-shrink: 0; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 150px; height: 90px; object-fit: cover; border-radius: 12px; 
+            flex-shrink: 0; border: 1px solid #ddd;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center justify-start sm:justify-center min-h-screen p-2 bg-gray-50">
 
-    <div class="max-w-md w-full">
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
-            <!-- Header -->
-            <div class="rocket-gradient p-6 flex justify-between items-center text-white">
-                <div class="flex items-center gap-2">
-                    <div class="bg-white p-1 rounded-xl shadow-sm">
-                        <img src="https://cdn-icons-png.flaticon.com/512/1017/1017599.png" class="w-9 h-9 object-contain" alt="Rocket">
-                    </div>
-                    <div>
-                        <h1 class="font-black text-xl tracking-tight">Rocket Payment</h1>
-                        <p class="text-[9px] opacity-70 font-bold uppercase tracking-widest">Sotota Shop Official</p>
-                    </div>
+    <div class="max-w-md w-full bg-white rounded-[35px] shadow-2xl overflow-hidden mt-2">
+        
+        <div class="rocket-gradient p-6 text-white flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-2 rounded-xl">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1017/1017599.png" class="w-7 h-7 object-contain">
                 </div>
-                <div class="text-right">
-                    <p class="text-[10px] uppercase font-bold opacity-80">Payable Amount</p>
-                    <h2 class="text-3xl font-black tracking-tight">৳ <span id="display-amount">0</span></h2>
+                <div>
+                    <h1 class="font-bold text-lg">রকেট পেমেন্ট</h1>
+                    <p class="text-[10px] opacity-80 uppercase tracking-widest">Sotota Shop Official</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] opacity-80 uppercase">পরিমাণ</p>
+                <h2 class="text-2xl font-black">৳ <span id="display-amount">0</span></h2>
+            </div>
+        </div>
+
+        <div class="p-6">
+            <div class="bg-gray-50 rounded-xl p-3 mb-5 flex justify-between text-xs border border-gray-100">
+                <span class="text-gray-500">অর্ডার আইডি: <b id="order-id" class="text-gray-800">-</b></span>
+                <span class="text-purple-700 font-bold">রকেট পার্সোনাল</span>
+            </div>
+
+            <div class="mb-5">
+                <label class="text-[10px] font-bold text-gray-400 uppercase mb-2 block">পেমেন্ট ধাপগুলো দেখুন</label>
+                <div id="banner-list" class="flex gap-3 overflow-x-auto banner-container pb-1">
+                    <div class="banner-img bg-gray-100 animate-pulse"></div>
+                    <div class="banner-img bg-gray-100 animate-pulse"></div>
                 </div>
             </div>
 
-            <div class="py-6">
-                <!-- Order Info (ছোট করে দেখানো) -->
-                <div class="px-6 mb-4">
-                    <div class="bg-gray-50 rounded-xl p-3 text-sm">
-                        <div class="flex justify-between mb-1">
-                            <span class="text-gray-500">অর্ডার আইডি:</span>
-                            <span id="order-id" class="font-mono text-xs text-gray-700">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-500">পেমেন্ট মেথড:</span>
-                            <span class="font-semibold text-purple-600">রকেট</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- How to Pay Banners -->
-                <div class="px-6 mb-6">
-                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-3 ml-1">কিভাবে পেমেন্ট করবেন? (ধাপগুলো দেখুন)</label>
-                    <div id="banner-list" class="flex gap-3 overflow-x-auto banner-container pb-2">
-                        <div class="banner-img skeleton-shimmer"></div>
-                        <div class="banner-img skeleton-shimmer"></div>
-                        <div class="banner-img skeleton-shimmer"></div>
-                    </div>
-                </div>
-
-                <div class="px-6">
-                    <!-- Info Alert -->
-                    <div class="bg-purple-50 border-l-[5px] border-[#8c3494] p-4 rounded-2xl mb-7">
-                        <p class="text-xs font-semibold text-gray-700 leading-relaxed">
-                            📌 <span class="font-black text-[#8c3494]">Send Money</span> করুন নিচের Rocket নম্বরে। টাকা পাঠানোর পর <span class="font-bold text-[#8c3494]">TrxID</span> টি নিচে দিয়ে সাবমিট দিন।
-                        </p>
-                    </div>
-
-                    <!-- Personal Number Section -->
-                    <div class="mb-8">
-                        <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest block mb-2 ml-1">রকেট পার্সোনাল নম্বর</label>
-                        <div onclick="copyNumber()" class="flex items-center justify-between bg-white p-5 rounded-2xl border-2 border-dashed border-purple-200 hover:border-[#8c3494] cursor-pointer transition-all active:scale-95">
-                            <span id="display-number" class="text-3xl font-black tracking-tighter text-gray-800">লোড হচ্ছে...</span>
-                            <div class="rocket-gradient text-white p-2.5 rounded-xl">
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Transaction ID Input -->
-                    <div class="space-y-6">
-                        <div>
-                            <label class="text-[11px] font-bold text-gray-400 uppercase ml-2 block mb-2 tracking-widest">Transaction ID (TrxID)</label>
-                            <input type="text" id="trx-input" placeholder="8N7A9X2K5L" autocomplete="off" class="w-full p-5 bg-gray-50 border-2 border-gray-200 focus:border-[#8c3494] focus:outline-none text-center font-mono font-bold text-xl uppercase rounded-2xl transition-all">
-                        </div>
-                        
-                        <button id="submit-btn" onclick="sendPayment()" class="w-full rocket-gradient text-white font-bold py-5 rounded-2xl shadow-lg uppercase text-sm tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2">
-                            Confirm & Submit
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="bg-gray-50 p-4 text-center border-t">
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest flex items-center justify-center gap-1">
-                    <span>🔒 Secure Payment</span> • <span>Powered by Sotota Shop</span>
+            <div class="bg-purple-50 border-l-4 border-purple-600 p-3 rounded-r-xl mb-6">
+                <p class="text-xs text-gray-700 leading-tight">
+                    নিচের নম্বরে <span class="font-bold text-purple-700">Send Money</span> করুন। এরপর ট্রানজেকশন আইডি (TrxID) দিয়ে সাবমিট দিন।
                 </p>
             </div>
+
+            <div class="text-center mb-8">
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">রকেট পার্সোনাল নম্বর</label>
+                <div class="bg-purple-50/50 border-2 border-dashed border-purple-200 rounded-[25px] p-5">
+                    <span id="display-number" class="text-4xl font-black text-gray-800 tracking-tighter block mb-3">লোড হচ্ছে...</span>
+                    
+                    <button onclick="copyNumber()" class="inline-flex items-center gap-2 bg-[#8c3494] hover:bg-[#702a76] text-white px-5 py-2 rounded-full text-xs font-bold shadow-md active:scale-95 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                        নম্বর কপি করুন
+                    </button>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1 block mb-1">Transaction ID (TrxID)</label>
+                    <input type="text" id="trx-input" placeholder="8N7A9X2K5L" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl text-center font-mono font-bold text-xl uppercase focus:border-purple-600 outline-none">
+                </div>
+                
+                <button id="submit-btn" onclick="sendPayment()" class="w-full rocket-gradient text-white font-bold py-4 rounded-2xl shadow-lg uppercase text-sm active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                    পেমেন্ট নিশ্চিত করুন
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-gray-50 p-4 text-center border-t border-gray-100">
+            <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-none">🔒 SSL Secured • Sotota Shop</p>
         </div>
     </div>
 
-    <div id="toastMsg" class="toast-custom font-medium">✨ নম্বর কপি হয়েছে!</div>
+    <div id="toastMsg" class="toast-custom font-bold"></div>
 
     <script>
         const firebaseConfig = {
@@ -145,115 +118,91 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         
-        // URL থেকে প্যারামিটার নেওয়া
         const urlParams = new URLSearchParams(window.location.search);
-        const orderId = urlParams.get('orderId');
         const amount = urlParams.get('amount') || "0";
-        const method = urlParams.get('method') || "rocket";
+        const orderId = urlParams.get('orderId');
         
-        const amountSpan = document.getElementById('display-amount');
-        const numberSpan = document.getElementById('display-number');
-        const bannerList = document.getElementById('banner-list');
-        const trxInput = document.getElementById('trx-input');
-        const submitBtn = document.getElementById('submit-btn');
-        const orderIdSpan = document.getElementById('order-id');
-        
-        amountSpan.innerText = amount;
-        if(orderId) orderIdSpan.innerText = orderId.substring(0, 8) + '...';
-        
-        function showToast(message, isError = false) {
+        document.getElementById('display-amount').innerText = amount;
+        if(orderId) document.getElementById('order-id').innerText = orderId.substring(0, 10);
+
+        function showToast(msg, isError = false) {
             const toast = document.getElementById('toastMsg');
-            toast.innerText = message;
-            toast.style.background = isError ? "#dc2626" : "#1e293b";
+            toast.innerText = msg;
+            toast.style.background = isError ? "#ef4444" : "#1F2937";
             toast.className = "toast-custom show";
             setTimeout(() => { toast.className = "toast-custom"; }, 2500);
         }
 
-        // ব্যানার লোড
-        db.collection("settings").doc("banners").onSnapshot((doc) => {
-            if(doc.exists) {
-                const data = doc.data();
-                let bannerHTML = '';
-                for(let i=1; i<=6; i++) {
-                    const imgUrl = data[`img${i}`];
-                    if(imgUrl) {
-                        bannerHTML += `<img src="${imgUrl}" class="banner-img" alt="Step ${i}">`;
-                    }
-                }
-                bannerList.innerHTML = bannerHTML || '<p class="text-xs text-gray-400">ব্যানার পাওয়া যায়নি</p>';
-            }
-        });
-
         // রকেট নম্বর লোড
         db.collection("settings").doc("rocket").onSnapshot((doc) => {
+            const numEl = document.getElementById('display-number');
             if(doc.exists && doc.data().number) {
-                numberSpan.innerText = doc.data().number;
+                numEl.innerText = doc.data().number;
             } else {
-                numberSpan.innerText = "নম্বর সেট নেই";
+                numEl.innerText = "নম্বর পাওয়া যায়নি";
             }
         });
-        
-        window.copyNumber = function() {
-            if(numberSpan.innerText.includes("লোড") || numberSpan.innerText === "নম্বর সেট নেই") return;
-            navigator.clipboard.writeText(numberSpan.innerText).then(() => {
-                showToast("📋 Rocket নম্বর কপি হয়েছে!");
-            });
-        };
 
-        window.sendPayment = async function() {
-            const trx = trxInput.value.trim().toUpperCase();
-            if(!trx) return showToast("❌ TrxID লিখুন!", true);
-            
-            if(!orderId) {
-                showToast("⚠️ অর্ডার আইডি নেই! শুধু পেমেন্ট রেকর্ড করা হবে।", true);
+        // ব্যানার লোড করার অংশ (এটি আগে মিসিং ছিল)
+        db.collection("settings").doc("banners").onSnapshot((doc) => {
+            const list = document.getElementById('banner-list');
+            if(doc.exists) {
+                const data = doc.data();
+                let html = '';
+                for(let i=1; i<=6; i++) {
+                    if(data[`img${i}`]) html += `<img src="${data[`img${i}`]}" class="banner-img">`;
+                }
+                list.innerHTML = html || '<p class="text-xs text-gray-400">ব্যানার নেই</p>';
             }
+        });
+
+        function copyNumber() {
+            const num = document.getElementById('display-number').innerText;
+            if(num.includes("লোড") || num.includes("পাওয়া")) return;
+            navigator.clipboard.writeText(num).then(() => {
+                showToast("✅ রকেট নম্বর কপি হয়েছে!");
+            });
+        }
+
+        async function sendPayment() {
+            const trx = document.getElementById('trx-input').value.trim().toUpperCase();
+            const btn = document.getElementById('submit-btn');
             
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `<span class="loading-spinner"></span> যাচাই হচ্ছে...`;
+            if(!trx) return showToast("⚠️ TrxID দিন", true);
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span class="loading-spinner"></span>`;
             
             try {
-                // ইউনিক TrxID চেক
                 const check = await db.collection("payments").where("trxid", "==", trx).get();
                 if(!check.empty) {
-                    showToast("⚠️ এই TrxID আগেই ব্যবহার হয়েছে!", true);
+                    showToast("❌ এই TrxID আগেই ব্যবহৃত হয়েছে", true);
                 } else {
-                    // পেমেন্ট রেকর্ড সেভ
                     await db.collection("payments").add({
                         trxid: trx,
                         amount: amount,
-                        method: method,
-                        orderId: orderId || null,
+                        method: "Rocket",
+                        orderId: orderId || "Manual",
                         status: "Pending",
                         time: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     
-                    // অর্ডার আইডি থাকলে অর্ডার আপডেট
-                    if(orderId) {
+                    if(orderId && orderId !== "null") {
                         await db.collection("orders").doc(orderId).update({
-                            trx: trx,
-                            paymentStatus: "completed",
-                            paymentTime: new Date().toISOString()
-                        });
-                        showToast("✅ পেমেন্ট সফল! অর্ডার কনফার্ম হয়েছে!");
-                    } else {
-                        showToast("✅ পেমেন্ট রেকর্ড করা হয়েছে!");
+                            paymentStatus: "Pending",
+                            trx: trx
+                        }).catch(() => {});
                     }
                     
-                    trxInput.value = "";
-                    
-                    setTimeout(() => {
-                        window.close();
-                    }, 2000);
+                    showToast("🎉 পেমেন্ট সাবমিট হয়েছে!");
+                    document.getElementById('trx-input').value = "";
                 }
             } catch (err) {
-                console.error(err);
-                showToast("❌ পেমেন্ট জমা দিতে ব্যর্থ!", true);
+                showToast("❌ সমস্যা হয়েছে, চেষ্টা করুন", true);
             }
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = "Confirm & Submit";
-        };
-
-        trxInput.addEventListener("input", function() { this.value = this.value.toUpperCase(); });
+            btn.disabled = false;
+            btn.innerHTML = "পেমেন্ট নিশ্চিত করুন";
+        }
     </script>
 </body>
-</html>
+                </html>           
